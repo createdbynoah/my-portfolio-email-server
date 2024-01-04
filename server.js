@@ -1,15 +1,22 @@
 const express = require('express');
 const sgMail = require('@sendgrid/mail');
+const cors = require('cors');
 const app = express();
 require('dotenv').config();
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.post('/api/send-email', (req, res) => {
     const { email, name, message } = req.body;
+    const messageWithBR = message.replace(/\n/g, "<br>");
+
+
+    console.log('message', message)
+    console.log('messageWithBR', messageWithBR)
 
     const date = new Date();
     const month = date.toLocaleString('default', { month: 'long' });
@@ -26,7 +33,7 @@ app.post('/api/send-email', (req, res) => {
         dynamic_template_data: {
             name,
             email,
-            message,
+            message: messageWithBR,
             month,
             day,
             year,
